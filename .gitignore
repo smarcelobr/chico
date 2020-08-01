@@ -107,3 +107,6 @@ dist
 # IntelliJ
 .idea/
 *.iml
+
+# config.json real
+conf/

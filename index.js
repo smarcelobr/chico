@@ -1,31 +1,44 @@
-console.log('Applicacao iniciada!');
+//import {Constants} from "discord.js";
+
+console.log('Aplicação iniciada!');
 
 const Discord = require('discord.js');
-
-/*const discord = new Discord(738863390167924808, Discord.CreateFlags.Default)
-
-function LogProblemsFunction(level, message)
-{
-  Console.WriteLine("Discord:{0} - {1}", level, message);
-}
-
-discord.SetLogHook(Discord.LogLevel.Debug, LogProblemsFunction);
-*/
-const token = 'NzM4ODYzMzkwMTY3OTI0ODA4.XySGJw._XCaWDOjfbmghUPxwoZFbXRdFbI';
+const config = require('./conf/config.json');
 
 const bot = new Discord.Client();
 
-bot.on('ready', () => {
+bot.on("debug", (msg) => {
+	console.log('DEBUG '+msg);
+} );
+
+bot.once("ready", () => {
 	console.log('Chico BOT está pronto para ser usado.');
 });
 
-console.log('Login...')
-bot.login(token)
+bot.on("message", (message) => {
+	const content = message.content;
+
+	console.log(content);
+
+	var chico_trigger = /^\s*Chico\W/i;
+
+	if (chico_trigger.test(content)) {
+		/* indica que o Chico deve reagir de alguma forma a essa mensagem
+		   Dependendo do que virá a seguir.
+		 */
+
+		message.reply('Eu num intendo nada desses assunto di ciência!');
+	}
+
+});
+
+console.log('Login...');
+bot.login(config.token)
   .then( () => {
 	    console.log('Bot Logado!');
 	  }) 
   .catch((err) => { 
-	  console.log('deu erro no login. :(')
+	  console.log('deu erro no login. :(');
 	  console.log(err) 
 	});
 
