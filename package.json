@@ -2,7 +2,7 @@
   "name": "chico",
   "version": "1.0.0",
   "description": "Bot que fala como uma pessoa do interior",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/smarcelobr/chico#readme",
   "dependencies": {
+    "@types/node": "^15.12.5",
     "discord.js": "^12.2.0",
     "natural": "^2.1.5"
   }

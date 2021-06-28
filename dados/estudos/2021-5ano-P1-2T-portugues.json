@@ -1,0 +1,40 @@
+{
+  "nome": "Sala de Estudos para a prova de Português de 27/06/2021 do 5 ano C",
+  "materia": {"id": 1, "nome": "Portugues"},
+  "questoes" : [{
+    "pergunta": "Em qual das opções há apenas pronomes pessoais?",
+    "opcoes": [{
+      "id": 1,
+      "content": "eu, tu, você, eles"
+    },{
+      "id": 2,
+      "content": "me, vos, teu, nós"
+    },{
+      "id": 3,
+      "content": "ele, consigo, vós, si"
+    },{
+      "id": 4,
+      "content": "os, contigo, vossos, suas"
+    }],
+    "resposta": 3
+  },{
+    "pergunta": "Quantos pronomes você identificou na frase: 'Eu fui ajudá-lo lá na escola.' ?",
+    "opcoes": [{
+      "id": 1,
+      "content": "2 pronomes: eu e -lo"
+    },{
+      "id": 2,
+      "content": "2 pronomes: eu e lá."
+    },{
+      "id": 3,
+      "content": "3 pronomes: eu, -lo, lá"
+    },{
+      "id": 4,
+      "content": "4 pronomes: eu, -lo, lá, na "
+    },{
+      "id": 5,
+      "content": "Nessa frase não tem pronomes."
+    }],
+    "resposta": 1
+  }]
+}
