@@ -11,7 +11,7 @@ Repositório onde estou aprendendo como desenvolver um bot para o discord.
 $ npm init
 $ npm install discord.js
 $ npm install natural
-$ criar o index.js  
+$ criar o Application.js  
 ```  
 
   - iniciar o desenvolvimento com typescript
@@ -24,7 +24,9 @@ $ tsc --init
   - módulos node instalados:
 
 ```
+$ npm install -g typescript
 $ npm install --save @types/node   // provê tipos para o node
+$ npm install discord.js
 ```
 
 
@@ -66,11 +68,8 @@ Em modo desenvolvimento, pode ser util usar o `nodemon`, pois, ele
 carrega automaticamente as alterações do código-fonte.
 
 ```
-nodemon index.js
+nodemon Application.js
 ```
-
-
-
 
 ## Referências
 

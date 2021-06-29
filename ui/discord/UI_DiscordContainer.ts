@@ -9,7 +9,7 @@ export class UI_DiscordContainer {
 
     constructor(private appRootContainer: AppRootContainer) {
         this._salaManager = new SalaManager(appRootContainer.estudosDAO);
-        this._discordBot = new DiscordBot(this._salaManager);
+        this._discordBot = new DiscordBot(this._salaManager, "http://localhost:8088");
     }
 
     run() {

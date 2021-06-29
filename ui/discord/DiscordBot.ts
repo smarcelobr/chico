@@ -1,4 +1,4 @@
-import discord from "discord.js";
+import discord, {Message, Snowflake} from "discord.js";
 import * as config from "../../conf/config.json";
 import {ISalaManager} from "./EstudoManager";
 
@@ -9,7 +9,7 @@ export interface IDiscordBot {
 export class DiscordBot implements IDiscordBot {
     private _bot: discord.Client;
 
-    constructor(private salaManager: ISalaManager) {
+    constructor(private salaManager: ISalaManager, private chicoWebAppBaseUrl: string) {
         this._bot = new discord.Client();
 
         this._bot.on(discord.Constants.Events.DEBUG, (msg) => {
@@ -27,20 +27,43 @@ export class DiscordBot implements IDiscordBot {
         });
 
         this._bot.on(discord.Constants.Events.MESSAGE_CREATE, (message) => {
-            const content = message.content;
+            this.onMessageCreate(message);
+        });
 
-            if (message.author.bot) return false;
+    }
 
-            if (message.content.includes("@here") || message.content.includes("@everyone")) return false;
+    run() {
+        this._bot.login(config.token)
+            .then( () => {
+                console.log('Bot Logado!');
+            })
+            .catch((err) => {
+                console.log('deu erro no login. :(');
+                console.log(err)
+            });
+    }
 
-            if (this._bot.user!=undefined && !message.mentions.has(this._bot.user) ) {
-            	return false;
-            }
+    private onMessageCreate(message: Message) {
 
-            // busca a Sala de Estudos associado a esse canal
+        // é para eu processar essa mensagem?
+        const content = message.content;
+
+        if (message.author.bot) return false;
+
+        if (message.content.includes("@here") || message.content.includes("@everyone")) return false;
+
+        if (this._bot.user!=undefined && !message.mentions.has(this._bot.user) ) {
+            return false;
+        }
+
+        // busca a Sala de Estudos associado a esse canal
+        let channelId = message.channel.id;
+        let sala = this.salaManager.fromDiscordChannel(channelId);
+
+        if (sala == undefined) {
             // se não for encontrado, responde perguntando qual sala de estudos ele quer associar a este canal.
-            let sala = this.salaManager.fromDiscordChannel(message.channel.id);
-
+            this.sugerirAssociacaoChannelComSalaExistente(message, channelId);
+        } else {
             console.log(content);
 
             const chico_trigger = /^\s*Chico\W/i;
@@ -64,19 +87,31 @@ export class DiscordBot implements IDiscordBot {
                 }
 
             }
-
-        });
+        }
 
     }
 
-    run() {
-        this._bot.login(config.token)
-            .then( () => {
-                console.log('Bot Logado!');
-            })
-            .catch((err) => {
-                console.log('deu erro no login. :(');
-                console.log(err)
-            });
+    private sugerirAssociacaoChannelComSalaExistente(message: Message, channelId: Snowflake) {
+
+        let url = this.chicoWebAppBaseUrl + '/discord?channelId=' + encodeURIComponent(channelId);
+        const exampleEmbed = new discord.MessageEmbed()
+            .setColor('#0099ff')
+            .setTitle('O que iremos estudar hoje?')
+            .setURL(this.chicoWebAppBaseUrl)
+            .setAuthor('Chico BOT', 'https://i.imgur.com/wSTFkRM.png', this.chicoWebAppBaseUrl)
+            .setDescription('Olá, O que vamos estudar hoje? [Escolha uma sala de estudos para esse canal](' + url+' \'Clique para atribuir sala de estudos\').')
+            .setThumbnail('https://i.imgur.com/wSTFkRM.png')
+            .addFields(
+                { name: 'Regular field title', value: 'Some value here' },
+                { name: '\u200B', value: '\u200B' },
+                { name: 'Inline field title', value: 'Some value here', inline: true },
+                { name: 'Inline field title', value: 'Some value here', inline: true },
+            )
+            .addField('Inline field title', 'Some value here', true)
+            .setImage('https://i.imgur.com/wSTFkRM.png')
+            .setTimestamp()
+            .setFooter('Some footer text here', 'https://i.imgur.com/wSTFkRM.png');
+
+        message.reply(exampleEmbed);
     }
 }

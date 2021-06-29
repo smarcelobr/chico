@@ -73,6 +73,6 @@
     "resolveJsonModule": true
   },
   "files": [
-    "index.ts"
+    "Application.ts"
   ]
 }

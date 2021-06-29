@@ -6,13 +6,6 @@ console.log('Aplicação iniciada!');
 
 let rootContainer = new AppRootContainer();
 
-let discord = new UI_DiscordContainer(rootContainer);
-discord.run();
-
-let webapp = new UI_WebappContainer(rootContainer);
-webapp.run();
-
-
 /*
 const PorterStemmerPt = require('./node_modules/natural/lib/natural/stemmers/porter_stemmer_pt');
 var bayesClassifier = new natural.BayesClassifier(PorterStemmerPt);
