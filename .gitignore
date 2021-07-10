@@ -110,3 +110,6 @@ dist
 
 # config.json real
 conf/
+
+# Ignores compiled TypeScript files
+app/**/*.js
