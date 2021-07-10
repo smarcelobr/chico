@@ -50,7 +50,7 @@ export class DiscordBot implements IDiscordBot {
 
         if (message.author.bot) return false;
 
-        if (message.content.includes("@here") || message.content.includes("@everyone")) return false;
+        if (content.includes("@here") || content.includes("@everyone")) return false;
 
         if (this._bot.user!=undefined && !message.mentions.has(this._bot.user) ) {
             return false;
@@ -64,6 +64,7 @@ export class DiscordBot implements IDiscordBot {
             // se não for encontrado, responde perguntando qual sala de estudos ele quer associar a este canal.
             this.sugerirAssociacaoChannelComSalaExistente(message, channelId);
         } else {
+
             console.log(content);
 
             const chico_trigger = /^\s*Chico\W/i;
@@ -93,21 +94,24 @@ export class DiscordBot implements IDiscordBot {
 
     private sugerirAssociacaoChannelComSalaExistente(message: Message, channelId: Snowflake) {
 
-        let url = this.chicoWebAppBaseUrl + '/discord?channelId=' + encodeURIComponent(channelId);
+        let url = this.chicoWebAppBaseUrl + '/discord/setChannel?userId='+encodeURIComponent(message.author.id)+'&channelId=' + encodeURIComponent(channelId);
         const exampleEmbed = new discord.MessageEmbed()
             .setColor('#0099ff')
-            .setTitle('O que iremos estudar hoje?')
-            .setURL(this.chicoWebAppBaseUrl)
-            .setAuthor('Chico BOT', 'https://i.imgur.com/wSTFkRM.png', this.chicoWebAppBaseUrl)
-            .setDescription('Olá, O que vamos estudar hoje? [Escolha uma sala de estudos para esse canal](' + url+' \'Clique para atribuir sala de estudos\').')
+            .setTitle('O que iremos estudar nesse canal? :slight_smile:')
+            .setURL(url)
+            //.setAuthor('Chico BOT', 'https://i.imgur.com/wSTFkRM.png', this.chicoWebAppBaseUrl)
+            .setDescription(`Olá ${message.author}.
+              Vamos começar a estudar? Para iniciar, eu preciso saber qual é a sala de estudos desse canal. 
+              Clique no título dessa mensagem para realizar essa atribuição no nosso site ou use um ou mais dos comandos abaixos 
+              para realizar essa atribuição aqui mesmo no canal.`)
             .setThumbnail('https://i.imgur.com/wSTFkRM.png')
             .addFields(
-                { name: 'Regular field title', value: 'Some value here' },
+                { name: 'Regular field title 0', value: 'Some value here' },
                 { name: '\u200B', value: '\u200B' },
-                { name: 'Inline field title', value: 'Some value here', inline: true },
-                { name: 'Inline field title', value: 'Some value here', inline: true },
+                { name: 'Inline field title 1', value: 'Some value here', inline: true },
+                { name: 'Inline field title 2', value: 'Some value here', inline: true },
             )
-            .addField('Inline field title', 'Some value here', true)
+            .addField('Inline field title 3', 'Some value here', true)
             .setImage('https://i.imgur.com/wSTFkRM.png')
             .setTimestamp()
             .setFooter('Some footer text here', 'https://i.imgur.com/wSTFkRM.png');

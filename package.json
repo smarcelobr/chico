@@ -2,7 +2,7 @@
   "name": "chico",
   "version": "1.0.0",
   "description": "Bot que fala como uma pessoa do interior",
-  "main": "index.ts",
+  "main": "Application.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -23,6 +23,10 @@
   "dependencies": {
     "@types/node": "^15.12.5",
     "discord.js": "^12.2.0",
-    "natural": "^2.1.5"
+    "natural": "^2.1.5",
+    "yargs": "^17.0.1"
+  },
+  "devDependencies": {
+    "@types/yargs": "^17.0.0"
   }
 }

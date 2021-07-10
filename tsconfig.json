@@ -74,5 +74,6 @@
   },
   "files": [
     "Application.ts"
-  ]
+  ],
+  "include": ["cli/cli.ts", "cli/cli1.ts", "cli/cli2.ts" ]
 }

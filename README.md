@@ -27,6 +27,8 @@ $ tsc --init
 $ npm install -g typescript
 $ npm install --save @types/node   // provê tipos para o node
 $ npm install discord.js
+$ npm install yargs --save               // processa linha de comandos
+$ npm i @types/yargs --save-dev 
 ```
 
 
