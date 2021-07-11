@@ -33,8 +33,3 @@ export interface Estudo {
     questoes: Questao[];
 }
 
-export interface SalaDeEstudosDiscord {
-    estudo: Estudo;
-    channelId: Snowflake;
-    membros: Snowflake[];
-}

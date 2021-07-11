@@ -73,7 +73,11 @@
     "resolveJsonModule": true
   },
   "files": [
-    "Application.ts"
+    "app/Application.ts"
   ],
-  "include": ["cli/cli.ts", "cli/cli1.ts", "cli/cli2.ts" ]
+  "include": [
+    "app/cli/cli.ts",
+    "app/cli/cli1.ts",
+    "app/cli/cli2.ts"
+  ]
 }

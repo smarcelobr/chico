@@ -1,8 +1,6 @@
 import EventEmitter from "events";
 import {IEstudosDAO} from "./domain/Repositories";
 import {EstudosJsonDAO} from "./jsonDao/EstudosJsonDAO";
-import {UI_DiscordContainer} from "./ui/discord/UI_DiscordContainer";
-import {UI_WebappContainer} from "./ui/webapp/UI_WebappContainer";
 
 export class AppRootContainer {
     // declaracao das dependencias globais

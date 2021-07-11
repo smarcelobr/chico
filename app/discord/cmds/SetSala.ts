@@ -1,4 +1,5 @@
 import {Arguments, Argv, CommandModule} from "yargs";
+import {IContextManager} from "../domain/ContextManager";
 
 interface SetSalaArgs {
     channel: string,
@@ -6,6 +7,10 @@ interface SetSalaArgs {
 }
 
 export class SetSala implements CommandModule<{},SetSalaArgs> {
+    constructor(private _contextManager: IContextManager) {
+
+    }
+
 
     get describe(): string | false {
         return "Atribui uma Sala a um canal do discord.";

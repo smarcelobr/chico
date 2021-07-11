@@ -1,6 +1,7 @@
 import discord, {Message, Snowflake} from "discord.js";
-import * as config from "../../conf/config.json";
-import {ISalaManager} from "./EstudoManager";
+import * as config from "../../../conf/config.json";
+import {IContextManager} from "../../discord/domain/ContextManager";
+import {IDiscordYargs} from "./DiscordYargs";
 
 export interface IDiscordBot {
     run(): void;
@@ -9,7 +10,7 @@ export interface IDiscordBot {
 export class DiscordBot implements IDiscordBot {
     private _bot: discord.Client;
 
-    constructor(private salaManager: ISalaManager, private chicoWebAppBaseUrl: string) {
+    constructor(private discordYargs: IDiscordYargs, private contextManager: IContextManager, private chicoWebAppBaseUrl: string) {
         this._bot = new discord.Client();
 
         this._bot.on(discord.Constants.Events.DEBUG, (msg) => {
@@ -43,7 +44,7 @@ export class DiscordBot implements IDiscordBot {
             });
     }
 
-    private onMessageCreate(message: Message) {
+    private async onMessageCreate(message: Message) {
 
         // é para eu processar essa mensagem?
         const content = message.content;
@@ -56,12 +57,11 @@ export class DiscordBot implements IDiscordBot {
             return false;
         }
 
-        // busca a Sala de Estudos associado a esse canal
+        // recupera o contexto desse canal
         let channelId = message.channel.id;
-        let sala = this.salaManager.fromDiscordChannel(channelId);
-
-        if (sala == undefined) {
-            // se não for encontrado, responde perguntando qual sala de estudos ele quer associar a este canal.
+        let context = await this.contextManager.getChannelContext(channelId);
+        if (context.sala == undefined) {
+            // se a sala não foi atribuida ao canal, responde perguntando qual sala de estudos ele quer associar a este canal.
             this.sugerirAssociacaoChannelComSalaExistente(message, channelId);
         } else {
 
