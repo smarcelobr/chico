@@ -1,11 +1,13 @@
 import EventEmitter from "events";
 import {IEstudosDAO} from "./domain/Repositories";
 import {EstudosJsonDAO} from "./jsonDao/EstudosJsonDAO";
+import {ContextManager} from "./discord/domain/ContextManager";
 
 export class AppRootContainer {
     // declaracao das dependencias globais
-    private _estudosDAO: IEstudosDAO;
-    private _eventsEmitter: EventEmitter;
+    private readonly _contextManager: ContextManager
+    private readonly _estudosDAO: IEstudosDAO;
+    private readonly _eventsEmitter: EventEmitter;
 
     constructor() {
         this._eventsEmitter = new EventEmitter();
@@ -13,6 +15,7 @@ export class AppRootContainer {
         // DAO
         this._estudosDAO = new EstudosJsonDAO();
 
+        this._contextManager = new ContextManager();
     }
 
     get eventsEmitter(): EventEmitter {
@@ -23,4 +26,7 @@ export class AppRootContainer {
         return this._estudosDAO;
     }
 
+    get contextManager(): ContextManager {
+        return this._contextManager;
+    }
 }

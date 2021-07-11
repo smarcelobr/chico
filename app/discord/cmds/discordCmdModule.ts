@@ -1,10 +1,9 @@
-import {Arguments, Argv, CommandBuilder, CommandModule} from "yargs";
+import {Arguments, Argv, CommandModule} from "yargs";
 import {SetSala} from "./SetSala";
 import {GetSala} from "./GetSala";
 
-export class DiscordCmdModule implements CommandModule<{},{}> {
+export class DiscordCmdModule implements CommandModule<{}, {}> {
     constructor(private _getSalaCmd: GetSala, private _setSalaCmd: SetSala) {
-
     }
 
     get command(): ReadonlyArray<string> | string {
@@ -19,18 +18,18 @@ export class DiscordCmdModule implements CommandModule<{},{}> {
         return "comandos para o Discord.";
     }
 
-    get builder(): CommandBuilder<{}, {}> {
-        return (yargs: Argv<{}>)=>{
-            return yargs
-                .version(false)
-                .command(this._getSalaCmd)
-                .command(this._setSalaCmd)
-                .demandCommand().help();
-        }
+    builder = (yargs: Argv<{}>): Argv<{}> => {
+        let y = yargs
+            .version(false)
+            .command(this._getSalaCmd)
+            .command(this._setSalaCmd)
+            .demandCommand()
+            .help();
+        return y;
     }
 
-    handler(args: Arguments<{}>): void {
+    handler = (args: Arguments<{}>): void => {
         console.log("discord command!")
-    }
+    };
 
 }

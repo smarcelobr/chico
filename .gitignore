@@ -113,3 +113,4 @@ conf/
 
 # Ignores compiled TypeScript files
 app/**/*.js
+app/**/*.map

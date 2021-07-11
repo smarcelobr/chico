@@ -10,7 +10,7 @@ export interface IDiscordBot {
 export class DiscordBot implements IDiscordBot {
     private _bot: discord.Client;
 
-    constructor(private discordYargs: IDiscordYargs, private contextManager: IContextManager, private chicoWebAppBaseUrl: string) {
+    constructor(private dargs: IDiscordYargs, private contextManager: IContextManager, private chicoWebAppBaseUrl: string) {
         this._bot = new discord.Client();
 
         this._bot.on(discord.Constants.Events.DEBUG, (msg) => {
@@ -27,8 +27,8 @@ export class DiscordBot implements IDiscordBot {
             console.log('Chico BOT está pronto para ser usado.');
         });
 
-        this._bot.on(discord.Constants.Events.MESSAGE_CREATE, (message) => {
-            this.onMessageCreate(message);
+        this._bot.on(discord.Constants.Events.MESSAGE_CREATE, async (message) => {
+            await this.onMessageCreate(message);
         });
 
     }
@@ -48,6 +48,7 @@ export class DiscordBot implements IDiscordBot {
 
         // é para eu processar essa mensagem?
         const content = message.content;
+        console.log("[MSG "+message.id+"]",content);
 
         if (message.author.bot) return false;
 
@@ -57,42 +58,43 @@ export class DiscordBot implements IDiscordBot {
             return false;
         }
 
-        // recupera o contexto desse canal
-        let channelId = message.channel.id;
-        let context = await this.contextManager.getChannelContext(channelId);
-        if (context.sala == undefined) {
-            // se a sala não foi atribuida ao canal, responde perguntando qual sala de estudos ele quer associar a este canal.
-            this.sugerirAssociacaoChannelComSalaExistente(message, channelId);
-        } else {
+        this.dargs.cli(message);
 
-            console.log(content);
-
-            const chico_trigger = /^\s*Chico\W/i;
-
-            if (chico_trigger.test(content)) {
-
-                if (content.trim().endsWith("?")) {
-                    /* indica que o Chico deve reagir de alguma forma a essa mensagem
-                       Dependendo do que virá a seguir.
-                     */
-
-                    message.reply('Eu num intendo nada desses assunto di ciência!', {
-                        files: ['assets/chico-feliz.jpg']
-                    });
-                } else {
-                    //message.reply("O qui qui é? Num conheçu essa.");
-                    console.log(message.author.id);
-                    console.log(message.author.bot);
-                    console.log(message.author.tag);
-                    console.log(message.author.username);
-                }
-
-            }
-        }
+        // // recupera o contexto desse canal
+        // let channelId = ;
+        // let context = await this.contextManager.getChannelContext(channelId);
+        // if (context.sala == undefined) {
+        //     // se a sala não foi atribuida ao canal, responde perguntando qual sala de estudos ele quer associar a este canal.
+        //     this.sugerirAssociacaoChannelComSalaExistente(message, channelId);
+        // } else {
+        //     console.log(content);
+        //
+        //     const chico_trigger = /^\s*Chico\W/i;
+        //
+        //     if (chico_trigger.test(content)) {
+        //
+        //         if (content.trim().endsWith("?")) {
+        //             /* indica que o Chico deve reagir de alguma forma a essa mensagem
+        //                Dependendo do que virá a seguir.
+        //              */
+        //
+        //             message.reply('Eu num intendo nada desses assunto di ciência!', {
+        //                 files: ['assets/chico-feliz.jpg']
+        //             });
+        //         } else {
+        //             //message.reply("O qui qui é? Num conheçu essa.");
+        //             console.log(message.author.id);
+        //             console.log(message.author.bot);
+        //             console.log(message.author.tag);
+        //             console.log(message.author.username);
+        //         }
+        //
+        //     }
+        // }
 
     }
 
-    private sugerirAssociacaoChannelComSalaExistente(message: Message, channelId: Snowflake) {
+    private async sugerirAssociacaoChannelComSalaExistente(message: Message, channelId: Snowflake) {
 
         let url = this.chicoWebAppBaseUrl + '/discord/setChannel?userId='+encodeURIComponent(message.author.id)+'&channelId=' + encodeURIComponent(channelId);
         const exampleEmbed = new discord.MessageEmbed()
@@ -116,6 +118,6 @@ export class DiscordBot implements IDiscordBot {
             .setTimestamp()
             .setFooter('Some footer text here', 'https://i.imgur.com/wSTFkRM.png');
 
-        message.reply(exampleEmbed);
+        await message.reply(exampleEmbed);
     }
 }

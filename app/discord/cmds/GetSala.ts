@@ -1,15 +1,14 @@
 import {Arguments, Argv, CommandModule} from "yargs";
 import {IContextManager} from "../domain/ContextManager";
+import {StringWriter} from "../DiscordConversation";
 
 interface GetSalaArgs {
     channel: string
 }
 
-export class GetSala implements CommandModule<{},GetSalaArgs> {
+export class GetSala implements CommandModule<{}, GetSalaArgs> {
 
-    constructor(private _contextManager: IContextManager) {
-
-    }
+    constructor(private readonly _contextManager: IContextManager, private readonly strWriter: StringWriter) {}
 
     get describe(): string | false {
         return "Mostra a Sala que está associada a esse canal do discord.";
@@ -23,37 +22,20 @@ export class GetSala implements CommandModule<{},GetSalaArgs> {
         return "gs";
     }
 
-    get handler() {
-        return async (args: Arguments<GetSalaArgs>) => {
-            console.log("**********discord getSala!**********");
-            if (args.channel) {
-                console.log("Canal:",args.channel);
-                let ctx = await this._contextManager.getChannelContext(args.channel);
-                if (ctx.sala) {
-                    console.log("Sala:",ctx.sala);
-                } else {
-                    console.log("Sem Sala...");
-                }
+    handler = async (args: Arguments<GetSalaArgs>) => {
+        await this.strWriter.write("**********discord getSala!**********");
+        if (args.channel) {
+            await this.strWriter.write("canal "+args.channel);
+            let ctx = await this._contextManager.getChannelContext(args.channel);
+            if (ctx.sala) {
+                await this.strWriter.write("sala "+ctx.sala);
             } else {
-                console.log("Sem canal especifido.");
+                await this.strWriter.write("sem sala");
             }
+        } else {
+            await this.strWriter.write("Sem canal especifido. ");
         }
     }
-
-    // async handler(args: Arguments<GetSalaArgs>): Promise<void> {
-    //     console.log("**********discord getSala!**********");
-    //     if (args.channel) {
-    //         console.log("Canal:",args.channel);
-    //         let ctx = await this._contextManager.getChannelContext(args.channel);
-    //         if (ctx.sala) {
-    //             console.log("Sala:",ctx.sala);
-    //         } else {
-    //             console.log("Sem Sala...");
-    //         }
-    //     } else {
-    //         console.log("Sem canal especifido.");
-    //     }
-    // }
 
     builder(yargs: Argv<{}>): Argv<GetSalaArgs> {
         return yargs

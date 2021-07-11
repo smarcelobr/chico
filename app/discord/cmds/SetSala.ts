@@ -1,5 +1,6 @@
 import {Arguments, Argv, CommandModule} from "yargs";
 import {IContextManager} from "../domain/ContextManager";
+import {StringWriter} from "../DiscordConversation";
 
 interface SetSalaArgs {
     channel: string,
@@ -7,10 +8,7 @@ interface SetSalaArgs {
 }
 
 export class SetSala implements CommandModule<{},SetSalaArgs> {
-    constructor(private _contextManager: IContextManager) {
-
-    }
-
+    constructor(private _contextManager: IContextManager, private readonly strWriter: StringWriter) {}
 
     get describe(): string | false {
         return "Atribui uma Sala a um canal do discord.";
@@ -25,7 +23,7 @@ export class SetSala implements CommandModule<{},SetSalaArgs> {
     }
 
     handler(args: Arguments<SetSalaArgs>): void {
-        console.log("discord setSala!")
+        this.strWriter.write("discord setSala!")
     }
 
     builder(yargs: Argv<{}>): Argv<SetSalaArgs> {

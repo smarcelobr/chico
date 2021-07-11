@@ -12,7 +12,7 @@ export class UI_DiscordContainer {
 
     constructor(private appRootContainer: AppRootContainer, private cliContainer: CliContainer) {
         this.contextManager = new ContextManager();
-        this._discordYargs = new DiscordYargs(cliContainer.discordCmd);
+        this._discordYargs = new DiscordYargs(this.contextManager);
         this._discordBot = new DiscordBot(this._discordYargs, this.contextManager, "http://localhost:8088");
     }
 
