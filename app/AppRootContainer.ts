@@ -13,7 +13,7 @@ export class AppRootContainer {
         this._eventsEmitter = new EventEmitter();
 
         // DAO
-        this._estudosDAO = new EstudosJsonDAO();
+        this._estudosDAO = new EstudosJsonDAO("D:\\smarc\\Projetos\\smarcelobr\\chico\\dados\\estudos");
 
         this._contextManager = new ContextManager();
     }

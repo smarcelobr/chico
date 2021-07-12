@@ -1,14 +1,15 @@
 import yargs, {Arguments, Argv} from "yargs";
 import {AppRootContainer} from "../AppRootContainer";
 import {CliContainer} from "./CliContainer";
-import {DiscordConversation, StringWriter} from "../discord/DiscordConversation";
+import {DiscordConversation} from "../discord/DiscordConversation";
 import {ConsoleWriter} from "./ConsoleWriter";
+import {IStringWriter} from "./IStringWriter";
 
 let rootContainer = new AppRootContainer();
-let cliContainer = new CliContainer(rootContainer);
 
-function getParser(strWriter: StringWriter): Argv<{}> {
-    let discordConversation = new DiscordConversation(rootContainer.contextManager, strWriter);
+function getParser(strWriter: IStringWriter): Argv<{}> {
+    let cliContainer = new CliContainer(strWriter, rootContainer.estudosDAO);
+    let discordConversation = new DiscordConversation(strWriter, rootContainer.contextManager, rootContainer.estudosDAO);
 
     return yargs
         .command(cliContainer.salaCmd)
@@ -17,9 +18,7 @@ function getParser(strWriter: StringWriter): Argv<{}> {
         .help()
         .fail(async function (msg, err, pYargs) {
             if (err) throw err; // preserve stack
-            await consoleWriter1.write('You broke it!');
-            await consoleWriter1.write(msg);
-            await consoleWriter1.write('You should be doing '+pYargs.help());
+            await consoleWriter1.write('*You broke it!*\n'+msg+'\nYou should be doing '+pYargs.help());
         })
         .showHelpOnFail(true, "falhou mano.")
         .demandCommand()

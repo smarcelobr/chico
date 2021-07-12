@@ -1,12 +1,16 @@
 import {Snowflake} from "discord.js";
-import {ChannelContext, IChannelContext} from "./DiscordContext";
+import {ChannelContext} from "./DiscordContext";
 
 interface ChannelContextMap {
-    [channelId: string]: IChannelContext;
+    [channelId: string]: ChannelContext;
 }
 
 export interface IContextManager {
-    getChannelContext(channelId: Snowflake): Promise<IChannelContext>;
+    /**
+     * obtem ou cria um contexto para esse canal do discord
+     * @param channelId id do canal do discord
+     */
+    getChannelContext(channelId: Snowflake): Promise<ChannelContext>;
 }
 
 export class ContextManager implements IContextManager {
@@ -17,11 +21,11 @@ export class ContextManager implements IContextManager {
         this.channelContextMap = {};
     }
 
-    getChannelContext(channelId: Snowflake): Promise<IChannelContext> {
-        return new Promise<IChannelContext>(((resolve, reject) => {
+    getChannelContext(channelId: Snowflake): Promise<ChannelContext> {
+        return new Promise<ChannelContext>(((resolve, reject) => {
             let channelCtx = this.channelContextMap[channelId];
             if (!channelCtx) {
-                channelCtx = new ChannelContext();
+                channelCtx = new ChannelContext(channelId);
                 this.channelContextMap[channelId] = channelCtx;
             }
             resolve(channelCtx);

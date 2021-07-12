@@ -2,20 +2,18 @@ import {DiscordCmdModule} from "./cmds/discordCmdModule";
 import {IContextManager} from "./domain/ContextManager";
 import {GetSala} from "./cmds/GetSala";
 import {SetSala} from "./cmds/SetSala";
-
-export interface StringWriter {
-    write: (msg:string) => Promise<void>;
-}
+import {IStringWriter} from "../cli/IStringWriter";
+import {IEstudosDAO} from "../domain/Repositories";
+import {PerguntaCmd} from "./cmds/pergunta-cmd";
 
 export class DiscordConversation {
     private readonly _discordCmdModule: DiscordCmdModule;
-    private readonly _getSalaCmd: GetSala;
-    private readonly _setSalaCmd: SetSala;
 
-    constructor(private readonly _contextManager: IContextManager, strWriter: StringWriter) {
-        this._getSalaCmd = new GetSala(this._contextManager, strWriter);
-        this._setSalaCmd = new SetSala(this._contextManager, strWriter);
-        this._discordCmdModule = new DiscordCmdModule(this._getSalaCmd, this._setSalaCmd);
+    constructor(strWriter: IStringWriter, _contextManager: IContextManager, estudoDao: IEstudosDAO) {
+        let _getSalaCmd = new GetSala(strWriter, _contextManager);
+        let _setSalaCmd = new SetSala(strWriter, _contextManager, estudoDao);
+        let perguntaCmd = new PerguntaCmd(strWriter, _contextManager);
+        this._discordCmdModule = new DiscordCmdModule(_getSalaCmd, _setSalaCmd, perguntaCmd);
     }
 
     get discordCmdModule(): DiscordCmdModule {

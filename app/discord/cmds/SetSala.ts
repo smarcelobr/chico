@@ -1,6 +1,10 @@
 import {Arguments, Argv, CommandModule} from "yargs";
 import {IContextManager} from "../domain/ContextManager";
-import {StringWriter} from "../DiscordConversation";
+import {SalaDeEstudos} from "../domain/DiscordContext";
+import {IStringWriter} from "../../cli/IStringWriter";
+import {channel} from "diagnostic_channel";
+import {IEstudosDAO} from "../../domain/Repositories";
+import {Estudo} from "../../domain/Entities";
 
 interface SetSalaArgs {
     channel: string,
@@ -8,7 +12,10 @@ interface SetSalaArgs {
 }
 
 export class SetSala implements CommandModule<{},SetSalaArgs> {
-    constructor(private _contextManager: IContextManager, private readonly strWriter: StringWriter) {}
+    constructor(private readonly strWriter: IStringWriter,
+                private readonly _contextManager: IContextManager,
+                private readonly estudoDao: IEstudosDAO
+                ) {}
 
     get describe(): string | false {
         return "Atribui uma Sala a um canal do discord.";
@@ -22,9 +29,21 @@ export class SetSala implements CommandModule<{},SetSalaArgs> {
         return "ss";
     }
 
-    handler(args: Arguments<SetSalaArgs>): void {
-        this.strWriter.write("discord setSala!")
-    }
+    handler = async (args: Arguments<SetSalaArgs>): Promise<void> => {
+        try {
+            let estudo = await this.estudoDao.obterEstudoPorId(args.sala);
+            if (estudo) {
+                let channelCtx = await this._contextManager.getChannelContext(args.channel);
+                channelCtx.salaDeEstudos = new SalaDeEstudos(estudo);
+
+                await this.strWriter.write(`A matéria escolhida foi:\n**${estudo.nome}** !`);
+            } else {
+                await this.strWriter.write(`Estudo id=${args.sala} não existe.`)
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
     builder(yargs: Argv<{}>): Argv<SetSalaArgs> {
         return yargs

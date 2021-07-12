@@ -1,6 +1,6 @@
-import {StringWriter} from "../discord/DiscordConversation";
+import {IStringWriter} from "./IStringWriter";
 
-export class ConsoleWriter implements StringWriter {
+export class ConsoleWriter implements IStringWriter {
     private readonly _session: string;
 
     constructor(session: string) {

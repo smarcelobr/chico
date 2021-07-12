@@ -58,6 +58,10 @@ export class DiscordBot implements IDiscordBot {
             return false;
         }
 
+        if (message.reference) {
+            console.log(message.reference.messageID)
+        }
+
         this.dargs.cli(message);
 
         // // recupera o contexto desse canal

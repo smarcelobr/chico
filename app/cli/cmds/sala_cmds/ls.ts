@@ -1,6 +1,9 @@
 import {Arguments, CommandModule} from "yargs";
+import {IStringWriter} from "../../IStringWriter";
+import {IEstudosDAO} from "../../../domain/Repositories";
 
-export class LsSala implements CommandModule<{},{}> {
+export class LsSala implements CommandModule {
+    constructor(private readonly strWriter: IStringWriter, private readonly estudosDAO: IEstudosDAO) {}
 
     get describe(): string | false {
         return "lista as salas ativas.";
@@ -14,9 +17,16 @@ export class LsSala implements CommandModule<{},{}> {
         return ["ls","dir"];
     }
 
-    handler(args: Arguments<{}>): void {
-        console.log("**********sala ls!**********");
-    }
+    handler = async (args: Arguments): Promise<void> => {
+        try {
+            let estudos = await this.estudosDAO.getAllEstudos();
+            let msg;
+            msg = estudos.map(estudo => "- `" + estudo.id + "`: **" + estudo.nome + "**;").join("\n");
+            await this.strWriter.write(msg);
+        } catch (e) {
+            console.error(e);
+        }
+    };
 
 }
 

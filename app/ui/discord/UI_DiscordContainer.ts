@@ -1,19 +1,17 @@
-import {AppRootContainer} from "../../AppRootContainer";
-import {IContextManager, ContextManager} from "../../discord/domain/ContextManager";
+import {ContextManager, IContextManager} from "../../discord/domain/ContextManager";
 import {DiscordBot, IDiscordBot} from "./DiscordBot";
 import {DiscordYargs, IDiscordYargs} from "./DiscordYargs";
-import {CliContainer} from "../../cli/CliContainer";
+import {AppRootContainer} from "../../AppRootContainer";
+import {IEstudosDAO} from "../../domain/Repositories";
 
 export class UI_DiscordContainer {
 
-    private contextManager: IContextManager;
-    private _discordYargs: IDiscordYargs;
-    private _discordBot: IDiscordBot;
+    private readonly _discordBot: IDiscordBot;
 
-    constructor(private appRootContainer: AppRootContainer, private cliContainer: CliContainer) {
-        this.contextManager = new ContextManager();
-        this._discordYargs = new DiscordYargs(this.contextManager);
-        this._discordBot = new DiscordBot(this._discordYargs, this.contextManager, "http://localhost:8088");
+    constructor(estudoDao: IEstudosDAO) {
+        let contextManager = new ContextManager();
+        let _discordYargs = new DiscordYargs(contextManager, estudoDao);
+        this._discordBot = new DiscordBot(_discordYargs, contextManager, "http://localhost:8088");
     }
 
     run() {

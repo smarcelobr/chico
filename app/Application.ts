@@ -7,9 +7,7 @@ console.log('Aplicação iniciada!');
 
 let rootContainer = new AppRootContainer();
 
-let cliContainer = new CliContainer(rootContainer);
-
-let chicoDiscordApp = new UI_DiscordContainer(rootContainer, cliContainer);
+let chicoDiscordApp = new UI_DiscordContainer(rootContainer.estudosDAO);
 chicoDiscordApp.run();
 
 let chicoWebApp = new UI_WebappContainer(rootContainer);

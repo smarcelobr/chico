@@ -1,7 +1,12 @@
-import yargs, {Arguments} from "yargs";
+import * as yargs from "yargs";
 import {Message} from "discord.js";
-import {DiscordConversation, StringWriter} from "../../discord/DiscordConversation";
+import {DiscordConversation} from "../../discord/DiscordConversation";
 import {IContextManager} from "../../discord/domain/ContextManager";
+import {IStringWriter} from "../../cli/IStringWriter";
+import {CliContainer} from "../../cli/CliContainer";
+import {IEstudosDAO} from "../../domain/Repositories";
+import {channel} from "diagnostic_channel";
+import Yargs from "yargs/yargs";
 
 export interface IDiscordYargs {
     cli(message: Message): void;
@@ -9,10 +14,13 @@ export interface IDiscordYargs {
 
 export class DiscordYargs implements IDiscordYargs {
 
-    constructor(private readonly _contextManager: IContextManager) {
+    constructor(private readonly _contextManager: IContextManager,
+                private readonly estudoDao: IEstudosDAO
+                ) {
+
     }
 
-    private static parseCallback(err: Error | undefined, argv: Arguments | Promise<Arguments>, output: string) {
+    private static parseCallback(err: Error | undefined, argv: yargs.Arguments | Promise<yargs.Arguments>, output: string) {
         console.log("---------------------------------");
         console.log("parse callback - begin");
         console.log(err);
@@ -22,37 +30,40 @@ export class DiscordYargs implements IDiscordYargs {
         //message.reply('Eu estou aprendendo ainda...');
     };
 
-    cli = (message: Message): void => {
+    private createParser(message: Message): yargs.Argv<{}> {
 
-        let comando = message.content.substr(message.content.indexOf(" ") + 1);
-
-        let botMessageWriter: StringWriter = new class implements StringWriter {
+        let botMessageWriter: IStringWriter = new class implements IStringWriter {
             write(msg: string): Promise<void> {
                 return new Promise(async resolve => {
-                    console.log("[REPLY " + message.id + "]", msg);
+                    console.log("[REPLY]", msg);
                     await message.reply(msg);
                     resolve();
                 });
             }
         }
 
-        let discordConversation = new DiscordConversation(this._contextManager, botMessageWriter);
+        let discordConversation = new DiscordConversation(botMessageWriter, this._contextManager, this.estudoDao);
+        let cliContainer = new CliContainer(botMessageWriter, this.estudoDao);
 
-        let yargsBot = yargs
+        return Yargs()
+            .scriptName('>')
+            .command(cliContainer.salaCmd)
             .command(discordConversation.discordCmdModule)
             .version("0.0.1")
             .help()
-            .fail(async function (msg, err, yargs) {
+            .fail(async function (msg, err, pYargs) {
                 if (err) throw err; // preserve stack
-                await botMessageWriter.write('You broke it!');
-                await botMessageWriter.write(msg);
-                await botMessageWriter.write('You should be doing ' + yargs.help());
+                await botMessageWriter.write('*You broke it!*\n'+msg+'\nYou should be doing '+pYargs.help());
             })
             .demandCommand()
             .strict(true)
-            .exitProcess(false);
+            .exitProcess(false)
+    }
 
-        let args = yargsBot.parseAsync(comando, {
+    cli = (message: Message): void => {
+        let comando = message.content.substr(message.content.indexOf(" ") + 1);
+
+        let args = this.createParser(message).parseAsync(comando, {
                 channel: message.channel.id
             },
             (...c_args) => {

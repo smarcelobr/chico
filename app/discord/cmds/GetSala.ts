@@ -1,6 +1,6 @@
 import {Arguments, Argv, CommandModule} from "yargs";
 import {IContextManager} from "../domain/ContextManager";
-import {StringWriter} from "../DiscordConversation";
+import {IStringWriter} from "../../cli/IStringWriter";
 
 interface GetSalaArgs {
     channel: string
@@ -8,7 +8,7 @@ interface GetSalaArgs {
 
 export class GetSala implements CommandModule<{}, GetSalaArgs> {
 
-    constructor(private readonly _contextManager: IContextManager, private readonly strWriter: StringWriter) {}
+    constructor(private readonly strWriter: IStringWriter, private readonly _contextManager: IContextManager) {}
 
     get describe(): string | false {
         return "Mostra a Sala que está associada a esse canal do discord.";
@@ -23,17 +23,19 @@ export class GetSala implements CommandModule<{}, GetSalaArgs> {
     }
 
     handler = async (args: Arguments<GetSalaArgs>) => {
-        await this.strWriter.write("**********discord getSala!**********");
-        if (args.channel) {
-            await this.strWriter.write("canal "+args.channel);
-            let ctx = await this._contextManager.getChannelContext(args.channel);
-            if (ctx.sala) {
-                await this.strWriter.write("sala "+ctx.sala);
+        try {
+            if (args.channel) {
+                let ctx = await this._contextManager.getChannelContext(args.channel);
+                if (ctx.salaDeEstudos) {
+                    await this.strWriter.write("Matéria dessa Sala:\n**" + ctx.salaDeEstudos.estudo.nome + "**");
+                } else {
+                    await this.strWriter.write("Sem sala criada.");
+                }
             } else {
-                await this.strWriter.write("sem sala");
+                await this.strWriter.write("Sem canal especifido. ");
             }
-        } else {
-            await this.strWriter.write("Sem canal especifido. ");
+        } catch (e) {
+            console.error(e);
         }
     }
 
