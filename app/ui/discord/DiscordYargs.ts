@@ -20,27 +20,7 @@ export class DiscordYargs implements IDiscordYargs {
 
     }
 
-    private static parseCallback(err: Error | undefined, argv: yargs.Arguments | Promise<yargs.Arguments>, output: string) {
-        console.log("---------------------------------");
-        console.log("parse callback - begin");
-        console.log(err);
-        console.log(output);
-        console.log(JSON.stringify(argv));
-        console.log("parse callback - end");
-        //message.reply('Eu estou aprendendo ainda...');
-    };
-
-    private createParser(message: Message): yargs.Argv<{}> {
-
-        let botMessageWriter: IStringWriter = new class implements IStringWriter {
-            write(msg: string): Promise<void> {
-                return new Promise(async resolve => {
-                    console.log("[REPLY]", msg);
-                    await message.reply(msg);
-                    resolve();
-                });
-            }
-        }
+    private createParser(botMessageWriter: IStringWriter): yargs.Argv<{}> {
 
         let discordConversation = new DiscordConversation(botMessageWriter, this._contextManager, this.estudoDao);
         let cliContainer = new CliContainer(botMessageWriter, this.estudoDao);
@@ -63,11 +43,24 @@ export class DiscordYargs implements IDiscordYargs {
     cli = (message: Message): void => {
         let comando = message.content.substr(message.content.indexOf(" ") + 1);
 
-        let args = this.createParser(message).parseAsync(comando, {
+        let botMessageWriter: IStringWriter = new class implements IStringWriter {
+            write(msg: string): Promise<void> {
+                return new Promise(async resolve => {
+                    console.log("[REPLY "+message.id+"]", msg);
+                    await message.reply(msg);
+                    resolve();
+                });
+            }
+        }
+
+        let args = this.createParser(botMessageWriter).parseAsync(comando, {
                 channel: message.channel.id
             },
-            (...c_args) => {
-                DiscordYargs.parseCallback(...c_args);
+            async (err, argv, output) => {
+                console.log('err>',err);
+                if (output) {
+                    await botMessageWriter.write(output);
+                }
             });
 
         args.catch(async (a) => {
