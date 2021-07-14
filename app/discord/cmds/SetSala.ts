@@ -36,9 +36,9 @@ export class SetSala implements CommandModule<{},SetSalaArgs> {
                 let channelCtx = await this._contextManager.getChannelContext(args.channel);
                 channelCtx.salaDeEstudos = new SalaDeEstudos(estudo);
 
-                await this.strWriter.write(`A matéria escolhida foi:\n**${estudo.nome}** !`);
+                await this.strWriter.reply(`A matéria escolhida foi:\n**${estudo.nome}** !`);
             } else {
-                await this.strWriter.write(`Estudo id=${args.sala} não existe.`)
+                await this.strWriter.reply(`Estudo id=${args.sala} não existe.`)
             }
         } catch (e) {
             console.error(e);

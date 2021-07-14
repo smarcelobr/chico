@@ -1,33 +1,37 @@
 import {Arguments, Argv, CommandModule} from "yargs";
-import {IStringWriter} from "../../cli/IStringWriter";
+import {EmojisEnum, IStringWriter} from "../../cli/IStringWriter";
 import {IContextManager} from "../domain/ContextManager";
 import {NumberUtil} from "../../util/NumberUtil";
 import {channel} from "diagnostic_channel";
 import {Snowflake} from "discord.js";
 
-interface PerguntaCmdArgs {
+interface RespondeCmdArgs {
     channel: Snowflake,
     message: Snowflake
+    author: Snowflake
 }
 
-export class PerguntaCmd implements CommandModule<{}, PerguntaCmdArgs> {
+/**
+ * Recebe uma resposta de um participante.
+ */
+export class RespondeCmd implements CommandModule<{}, RespondeCmdArgs> {
     constructor(private readonly strWriter: IStringWriter,
                 private readonly contextManager: IContextManager) {
     }
 
     get describe(): string | false {
-        return "Pergunta um questão aleatória dessa sala de estudo.";
+        return "Resposta a uma questão dessa sala de estudo.";
     }
 
     get command(): ReadonlyArray<string> | string {
-        return "pergunta";
+        return "resposta";
     }
 
     get aliases(): ReadonlyArray<string> | string {
-        return ["p"];
+        return ["r"];
     }
 
-    builder = async (yargs: Argv<{}>): Promise<Argv<PerguntaCmdArgs>> => {
+    builder = async (yargs: Argv<{}>): Promise<Argv<RespondeCmdArgs>> => {
         return yargs
             .version(false)
             .option('channel', {
@@ -40,21 +44,25 @@ export class PerguntaCmd implements CommandModule<{}, PerguntaCmdArgs> {
                 alias: 'm',
                 describe: 'Id do message do comando',
                 demandOption: "Especifique o ID da mensagem que solicitou a pergunta."
+            }).option('author', {
+                type: 'string',
+                alias: 'a',
+                describe: 'Id do participante que respondeu',
+                demandOption: "Especifique o ID do usuário que respondeu."
             });
     }
 
-    handler = async (args: Arguments<PerguntaCmdArgs>): Promise<void> => {
+    handler = async (args: Arguments<RespondeCmdArgs>): Promise<void> => {
         try {
             let chCtx = await this.contextManager.getChannelContext(args.channel);
             if (chCtx.salaDeEstudos) {
-                let estudo = chCtx.salaDeEstudos.estudo;
-                let idxSorteio = NumberUtil.randomInteger(0, estudo.questoes.length-1);
-                let questao = estudo.questoes[idxSorteio];
-                let msg = questao.pergunta+"\n"+questao.opcoes.map((opc, ix)=>`${ix} - ${opc.content};`).join("\n");
-                let idMsg = await this.strWriter.send(msg);
-                await this.contextManager.setQuestaoAtiva(args.channel, idMsg, questao);
+                if (chCtx.salaDeEstudos.questaoMessageId==args.message) {
+                    let idMsg = await this.strWriter.reage(EmojisEnum.thumbsup);
+                } else {
+                    await this.strWriter.reply("Precisa responder a uma questão ativa.");
+                }
             } else {
-                await this.strWriter.reply("Necessário atribuir uma matéria a esse canal. Use o comando `discord setSala <id da Materia>`");
+                await this.strWriter.reply("Necessário ter uma questão ativa.");
             }
         } catch (e) {
             console.error(e);
@@ -62,3 +70,4 @@ export class PerguntaCmd implements CommandModule<{}, PerguntaCmdArgs> {
     };
 
 }
+

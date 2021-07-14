@@ -27,12 +27,12 @@ export class GetSala implements CommandModule<{}, GetSalaArgs> {
             if (args.channel) {
                 let ctx = await this._contextManager.getChannelContext(args.channel);
                 if (ctx.salaDeEstudos) {
-                    await this.strWriter.write("Matéria dessa Sala:\n**" + ctx.salaDeEstudos.estudo.nome + "**");
+                    await this.strWriter.reply("Matéria dessa Sala:\n**" + ctx.salaDeEstudos.estudo.nome + "**");
                 } else {
-                    await this.strWriter.write("Sem sala criada.");
+                    await this.strWriter.reply("Sem sala criada.");
                 }
             } else {
-                await this.strWriter.write("Sem canal especifido. ");
+                await this.strWriter.reply("Sem canal especifido. ");
             }
         } catch (e) {
             console.error(e);

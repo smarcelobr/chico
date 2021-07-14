@@ -5,7 +5,7 @@ export class UI_WebappContainer {
     private _server: ChicoBackend;
 
     constructor(private appRootContainer: AppRootContainer) {
-        this._server = new ChicoBackend(appRootContainer.eventsEmitter);
+        this._server = new ChicoBackend();
     }
 
     run() {

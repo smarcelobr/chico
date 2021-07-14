@@ -22,7 +22,7 @@ export class LsSala implements CommandModule {
             let estudos = await this.estudosDAO.getAllEstudos();
             let msg;
             msg = estudos.map(estudo => "- `" + estudo.id + "`: **" + estudo.nome + "**;").join("\n");
-            await this.strWriter.write(msg);
+            await this.strWriter.reply(msg);
         } catch (e) {
             console.error(e);
         }

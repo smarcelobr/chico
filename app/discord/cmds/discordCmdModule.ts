@@ -2,11 +2,13 @@ import {Arguments, Argv, CommandModule} from "yargs";
 import {SetSala} from "./SetSala";
 import {GetSala} from "./GetSala";
 import {PerguntaCmd} from "./pergunta-cmd";
+import {RespondeCmd} from "./responde-cmd";
 
 export class DiscordCmdModule implements CommandModule<{}, {}> {
     constructor(private readonly getSalaCmd: GetSala,
                 private readonly setSalaCmd: SetSala,
-                private readonly perguntaCmd: PerguntaCmd) {
+                private readonly perguntaCmd: PerguntaCmd,
+                private readonly respondeCmd: RespondeCmd) {
     }
 
     get command(): ReadonlyArray<string> | string {
@@ -27,6 +29,7 @@ export class DiscordCmdModule implements CommandModule<{}, {}> {
             .command(this.getSalaCmd)
             .command(this.setSalaCmd)
             .command(this.perguntaCmd)
+            .command(this.respondeCmd)
             .demandCommand()
             .help();
         return y;

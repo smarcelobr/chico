@@ -11,7 +11,7 @@ interface Opcao {
     content: string;
 }
 
-class Questao {
+export class Questao {
     pergunta: string;
     opcoes: Opcao[];
     resposta: OpcaoId;

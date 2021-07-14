@@ -5,6 +5,7 @@ import {SetSala} from "./cmds/SetSala";
 import {IStringWriter} from "../cli/IStringWriter";
 import {IEstudosDAO} from "../domain/Repositories";
 import {PerguntaCmd} from "./cmds/pergunta-cmd";
+import {RespondeCmd} from "./cmds/responde-cmd";
 
 export class DiscordConversation {
     private readonly _discordCmdModule: DiscordCmdModule;
@@ -13,7 +14,8 @@ export class DiscordConversation {
         let _getSalaCmd = new GetSala(strWriter, _contextManager);
         let _setSalaCmd = new SetSala(strWriter, _contextManager, estudoDao);
         let perguntaCmd = new PerguntaCmd(strWriter, _contextManager);
-        this._discordCmdModule = new DiscordCmdModule(_getSalaCmd, _setSalaCmd, perguntaCmd);
+        let respondeCmd = new RespondeCmd(strWriter, _contextManager);
+        this._discordCmdModule = new DiscordCmdModule(_getSalaCmd, _setSalaCmd, perguntaCmd, respondeCmd);
     }
 
     get discordCmdModule(): DiscordCmdModule {

@@ -18,7 +18,7 @@ function getParser(strWriter: IStringWriter): Argv<{}> {
         .help()
         .fail(async function (msg, err, pYargs) {
             if (err) throw err; // preserve stack
-            await consoleWriter1.write('*You broke it!*\n'+msg+'\nYou should be doing '+pYargs.help());
+            await consoleWriter1.reply('*You broke it!*\n'+msg+'\nYou should be doing '+pYargs.help());
         })
         .showHelpOnFail(true, "falhou mano.")
         .demandCommand()
@@ -27,12 +27,12 @@ function getParser(strWriter: IStringWriter): Argv<{}> {
 }
 
 let parseCallback = function (err: Error | undefined, argv: Arguments|Promise<Arguments>, output: string) {
-    // console.log("---------------------------------");
-    // console.log("parse callback - begin");
-    // console.log(err);
-    // console.log(output);
-    // console.log(JSON.stringify(argv));
-    console.log("parse callback - end");
+    if (err) {
+        console.error(err);
+    }
+    if (output) {
+        console.info(output);
+    }
 };
 
 let consoleWriter1 = new ConsoleWriter("CMD1");

@@ -4,10 +4,6 @@ import * as fs from "fs"
 import * as path from "path";
 import {EventEmitter} from "events";
 
-interface ChicoBackendEvents {
-    "recebido": () => void;
-}
-
 export interface IChicoBackend {
     run(): void;
 }
@@ -22,7 +18,7 @@ export class ChicoBackend implements IChicoBackend {
         ".ico": "image/x-icon"
     };
 
-    constructor(private _eventsEmitter: EventEmitter) {
+    constructor() {
         this.server = http.createServer((req: IncomingMessage, res: ServerResponse) => {
             this.requestListener(req, res);
         });
@@ -74,7 +70,6 @@ export class ChicoBackend implements IChicoBackend {
                 'Content-Type': contentType
             });
             res.end(data);
-            this._eventsEmitter.emit("recebido");
         });
     }
 

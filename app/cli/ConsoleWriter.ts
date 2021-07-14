@@ -1,4 +1,5 @@
-import {IStringWriter} from "./IStringWriter";
+import {EmojisEnum, IStringWriter} from "./IStringWriter";
+import {Guid} from "../util/Guid";
 
 export class ConsoleWriter implements IStringWriter {
     private readonly _session: string;
@@ -7,10 +8,25 @@ export class ConsoleWriter implements IStringWriter {
         this._session = session;
     }
 
-    write(msg: string): Promise<void> {
+    send(msg: string): Promise<string> {
         return new Promise(resolve => {
-            console.info("["+this._session+"]", msg);
-            resolve();
+            console.info("[MSG "+this._session+"]", msg);
+            resolve(Guid.newGuid());
         });
     }
+
+    reply(msg: string): Promise<string> {
+        return new Promise(resolve => {
+            console.info("[REPLY "+this._session+"]", msg);
+            resolve(Guid.newGuid());
+        });
+    }
+
+    reage(msg: EmojisEnum): Promise<string> {
+        return new Promise(resolve => {
+            console.info("[REACT "+this._session+"]", msg);
+            resolve(Guid.newGuid());
+        });
+    }
+
 }

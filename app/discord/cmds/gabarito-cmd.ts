@@ -1,16 +1,20 @@
 import {Arguments, Argv, CommandModule} from "yargs";
 import {IStringWriter} from "../../cli/IStringWriter";
+import {IEstudosDAO} from "../../domain/Repositories";
 import {IContextManager} from "../domain/ContextManager";
 import {NumberUtil} from "../../util/NumberUtil";
 import {channel} from "diagnostic_channel";
 import {Snowflake} from "discord.js";
 
-interface PerguntaCmdArgs {
+interface GabaritoCmdArgs {
     channel: Snowflake,
     message: Snowflake
 }
 
-export class PerguntaCmd implements CommandModule<{}, PerguntaCmdArgs> {
+/**
+ * Apresenta o gabarito (respostas corretas) da avaliação.
+ */
+export class GabaritoCmd implements CommandModule<{}, GabaritoCmdArgs> {
     constructor(private readonly strWriter: IStringWriter,
                 private readonly contextManager: IContextManager) {
     }
@@ -27,7 +31,7 @@ export class PerguntaCmd implements CommandModule<{}, PerguntaCmdArgs> {
         return ["p"];
     }
 
-    builder = async (yargs: Argv<{}>): Promise<Argv<PerguntaCmdArgs>> => {
+    builder = async (yargs: Argv<{}>): Promise<Argv<GabaritoCmdArgs>> => {
         return yargs
             .version(false)
             .option('channel', {
@@ -43,7 +47,7 @@ export class PerguntaCmd implements CommandModule<{}, PerguntaCmdArgs> {
             });
     }
 
-    handler = async (args: Arguments<PerguntaCmdArgs>): Promise<void> => {
+    handler = async (args: Arguments<GabaritoCmdArgs>): Promise<void> => {
         try {
             let chCtx = await this.contextManager.getChannelContext(args.channel);
             if (chCtx.salaDeEstudos) {
@@ -51,7 +55,7 @@ export class PerguntaCmd implements CommandModule<{}, PerguntaCmdArgs> {
                 let idxSorteio = NumberUtil.randomInteger(0, estudo.questoes.length-1);
                 let questao = estudo.questoes[idxSorteio];
                 let msg = questao.pergunta+"\n"+questao.opcoes.map((opc, ix)=>`${ix} - ${opc.content};`).join("\n");
-                let idMsg = await this.strWriter.send(msg);
+                let idMsg = await this.strWriter.reply(msg);
                 await this.contextManager.setQuestaoAtiva(args.channel, idMsg, questao);
             } else {
                 await this.strWriter.reply("Necessário atribuir uma matéria a esse canal. Use o comando `discord setSala <id da Materia>`");
@@ -62,3 +66,4 @@ export class PerguntaCmd implements CommandModule<{}, PerguntaCmdArgs> {
     };
 
 }
+

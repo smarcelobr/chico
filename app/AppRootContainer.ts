@@ -7,19 +7,12 @@ export class AppRootContainer {
     // declaracao das dependencias globais
     private readonly _contextManager: ContextManager
     private readonly _estudosDAO: IEstudosDAO;
-    private readonly _eventsEmitter: EventEmitter;
 
     constructor() {
-        this._eventsEmitter = new EventEmitter();
-
         // DAO
         this._estudosDAO = new EstudosJsonDAO("D:\\smarc\\Projetos\\smarcelobr\\chico\\dados\\estudos");
 
         this._contextManager = new ContextManager();
-    }
-
-    get eventsEmitter(): EventEmitter {
-        return this._eventsEmitter;
     }
 
     get estudosDAO(): IEstudosDAO {
